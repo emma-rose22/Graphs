@@ -3,6 +3,10 @@
 class Queue():
     def __init__(self):
         self.queue = []
+    def __str__(self):
+        return f'{self.queue}'
+    def peek(self):
+        return self.queue[-1]
     def enqueue(self, value):
         self.queue.append(value)
     def dequeue(self):
@@ -16,6 +20,10 @@ class Queue():
 class Stack():
     def __init__(self):
         self.stack = []
+    def __str__(self):
+        return f'{self.stack}'
+    def peek(self):
+        return self.stack[-1]
     def push(self, value):
         self.stack.append(value)
     def pop(self):

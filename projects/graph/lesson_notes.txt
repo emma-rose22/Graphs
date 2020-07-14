@@ -1,0 +1,84 @@
+# how to solve graphing problems:
+
+# 1. Describe the problem using graphs terminology
+#     What are your nodes?
+#     when are nodes connected?
+#     What are your connected components?
+
+# 2. Build your graph, or at least write get_neighbors() function
+#     Figure out how to get the nodes with which the node has an edge (how to connect nodes)
+
+# 3. Choose your algorithm and apply it 
+
+# EXAMPLE
+# Given two words (begin_word and end_word), and a dictionary's word list, 
+# return the shortest transformation sequence from begin_word to end_word, such that:
+# Only one letter can be changed at a time.
+# Each transformed word must exist in the word list. Note that begin_word is not a transformed word.
+# begin_word = "hit"
+# end_word = "cog"
+# return: ['hit', 'hot', 'cot', 'cog']
+# begin_word = "sail"
+# end_word = "boat"
+# ['sail', 'bail', 'boil', 'boll', 'bolt', 'boat']
+
+# 1. Translate into graphs terminology
+#     nodes: words
+#     theres an edge if words are different by one letter and are in the word list
+
+# 2. get_neighbors
+
+# 3. algorithm == BFS
+
+
+# can filter our word list by length (should equal length of starter word)
+
+##BFS will find shortest way
+
+#we can iterate through every letter in the word
+#we can swap out the letter with a letter in the alphabet
+# if the result is in our words list, its a neighbor
+
+from util import Queue
+import string
+
+def get_neighbors(start_word):
+    neighbors = []
+    #for every letter in the start word
+    for letter_index in range(len(start_word)):
+        #and for every letter of the alphabet
+        for letter in string.ascii_lowercase:
+            #turn word into list of letters so we can change it 
+            word_list = list(start_word)
+            #swith out the current letter index with each letter of the alphabet
+            word_list[letter_index] = letter
+
+            #turn it back into a string
+            word = "".join(word_list)
+
+            #if it is in the list and not the start word, it is the word we need
+            if word in word_list and word != start_word:
+                neighbors.append(word)
+
+            
+
+def word_ladders(start_word, end_word):
+    q = Queue()
+
+    visited = set()
+
+    q.enqueue([start_word])
+
+    while q.size() > 0:
+        current_path = q.dequeue()
+        current_word = current_path[-1]
+
+        if current_word == end_word:
+            return current_path
+
+        if current_word not in visited:
+            visited.add(current_word)
+            neighbors = self.get_neighbors(current_word)
+
+            for neighbor in neighbors:
+                q.enqueue(current_path + [neighbor])
