@@ -225,22 +225,39 @@ class Graph:
         #remove entry if it has no children
         #if we have already visited a node, remove from stack
 
-        # path = Stack()
-        # visited = set()
+        s = Stack()
+        visited = set()
 
-        # path.push(starting_vertex)
+        #add rhe path to the starting vertex
 
-        # while path.size() > 0:
-        #     print('path:', path)
-        #     print('visited:', visited)
-        #     current = path.pop()
-        #     visited.add(current)
+        path = [starting_vertex]
+        s.push(path)
 
-        #     neighbors = self.get_neighbors(current)
-        #     for i in neighbors:
-        #         path.push(i)
-        #     if path.peek() == destination_vertex:
-        #         return path
+        while s.size() > 0:
+            #get current path out of queue
+            current_path = s.pop()
+            #get the current node out of the current path
+            current_node = current_path[-1]
+            if current_node == destination_vertex:
+                return current_path
+            if current_node not in visited:
+                visited.add(current_node)
+                neighbors = self.get_neighbors(current_node)
+                for neighbor in neighbors:
+                    #make a copy of the path for each neighbor before adding it 
+                    #this is so we don't alter the original path for different nodes
+                    path_copy = current_path[:] 
+                    path_copy.append(neighbor)
+
+                    s.push(path_copy)
+
+        #while queue isnt empty
+        #  dequeue node at front of line
+        #  if it is the target, return it
+
+        #  if not visited, mark as visited
+        #  get neighbors
+        #     for each neighbor, add to queue
 
     def dfs_recursive(self, starting_vertex, destination_vertex, path= [], visited=set()):
         """

@@ -42,43 +42,88 @@
 from util import Queue
 import string
 
-def get_neighbors(start_word):
-    neighbors = []
-    #for every letter in the start word
-    for letter_index in range(len(start_word)):
-        #and for every letter of the alphabet
-        for letter in string.ascii_lowercase:
-            #turn word into list of letters so we can change it 
-            word_list = list(start_word)
-            #swith out the current letter index with each letter of the alphabet
-            word_list[letter_index] = letter
+my_file = open('words.txt', 'r')
+words = my_file.read().split("\n")
+my_file.close()
 
-            #turn it back into a string
-            word = "".join(word_list)
+word_set = set()
+for word in words:
+    word_set.add(word.lower())
 
-            #if it is in the list and not the start word, it is the word we need
-            if word in word_list and word != start_word:
-                neighbors.append(word)
+# def get_neighbors(start_word):
+#     neighbors = []
+#     #for every letter in the start word
+#     for letter_index in range(len(start_word)):
+#         #and for every letter of the alphabet
+#         for letter in string.ascii_lowercase:
+#             #turn word into list of letters so we can change it 
+#             word_list = list(start_word)
+#             #swith out the current letter index with each letter of the alphabet
+#             word_list[letter_index] = letter
+
+#             #turn it back into a string
+#             word = "".join(word_list)
+
+#             #if it is in the list and not the start word, it is the word we need
+#             if word in word_list and word != start_word:
+#                 neighbors.append(word)
 
             
 
+# def word_ladders(start_word, end_word):
+#     q = Queue()
+
+#     visited = set()
+
+#     q.enqueue([start_word])
+
+#     while q.size() > 0:
+#         current_path = q.dequeue()
+#         current_word = current_path[-1]
+
+#         if current_word == end_word:
+#             return current_path
+
+#         if current_word not in visited:
+#             visited.add(current_word)
+#             neighbors = get_neighbors(current_word)
+
+#             for neighbor in neighbors:
+#                 q.enqueue(current_path + [neighbor])
+
+def get_neighbors(start_word):
+    neighbors = []
+# for every letter in the word,
+    for letter_index in range(len(start_word)):
+        # for every letter in the alphabet
+        for letter in string.ascii_lowercase:
+            ## turn our start word into a list, then back again
+            word_list = list(start_word)
+        ## swap out a letter in the alphabet
+            word_list[letter_index] = letter
+            word = "".join(word_list)
+        ### if the result is in our words list, it's a neighbor!
+            if word in word_set and word != start_word:
+                neighbors.append(word)
+
+
 def word_ladders(start_word, end_word):
-    q = Queue()
+   q = Queue() 
+   visited = set()
+   q.enqueue([start_word])
+   while q.size() > 0:
+       current_path = q.dequeue()
+       current_word = current_path[-1]
+       if current_word == end_word:
+           return current_path
+       if current_word not in visited:
+           visited.add(current_word)
+           neighbors = get_neighbors(current_word)
+           for neighbor in neighbors:
+               path_copy = list(current_path)
+               path_copy.append(neighbor)
+               q.enqueue(path_copy)
 
-    visited = set()
 
-    q.enqueue([start_word])
 
-    while q.size() > 0:
-        current_path = q.dequeue()
-        current_word = current_path[-1]
-
-        if current_word == end_word:
-            return current_path
-
-        if current_word not in visited:
-            visited.add(current_word)
-            neighbors = self.get_neighbors(current_word)
-
-            for neighbor in neighbors:
-                q.enqueue(current_path + [neighbor])
+print(word_ladders('sail', 'boat'))

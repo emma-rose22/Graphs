@@ -1,3 +1,5 @@
+import random
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -7,6 +9,11 @@ class SocialGraph:
         self.last_id = 0
         self.users = {}
         self.friendships = {}
+
+    def fisher_yates_shuffle(self, l):
+        for i in range(0, len(l)):
+            random_index = random.randint(i, len(l) - 1)
+            l[random_index], l[i] = l[i], l[random_index]
 
     def add_friendship(self, user_id, friend_id):
         """
@@ -43,10 +50,31 @@ class SocialGraph:
         self.users = {}
         self.friendships = {}
         # !!!! IMPLEMENT ME
+        total_friendships = num_users * avg_friendships
 
         # Add users
+        ## use num users
+        for user in range(num_users):
+            self.add_user(user)
 
         # Create friendships
+        ## we could make a list with all possible friendships 
+        friendships = []
+        for user in range(1, self.last_id + 1):
+            for friend in range(user + 1, num_users + 1):
+                friendship = (user, friend)
+                friendships.append(friendship)
+        
+        #shuffle the list 
+        self.fisher_yates_shuffle(friendships)
+        #take as many friends as we need
+        total_friendships = num_users * avg_friendships
+        #divided by two because bidirectional
+        random_friendships = friendships[:total_friendships//2]
+
+        # add to self.friendships
+        for friendship in random_friendships:
+            self.add_friendship(friendship[0], friendship[1])
 
     def get_all_social_paths(self, user_id):
         """
