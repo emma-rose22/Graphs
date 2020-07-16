@@ -1,4 +1,5 @@
 import random
+from util import Queue
 
 class User:
     def __init__(self, name):
@@ -77,39 +78,36 @@ class SocialGraph:
         # to the class friendships
         for friendship in random_friendships:
             self.add_friendship(friendship[0], friendship[1])
-    # def bft(self, starting_vertex):
-    #     """
-    #     Print each vertex in breadth-first order
-    #     beginning from starting_vertex.
-    #     """
-    #     # make a queue
-    #     # insert starting node into queue
-    #     # we don't want to visit the same node twice
-    #     #   can do this with a set
 
-    #     #while queueu isn't empyu
-    #     #  deque from front of line
-    #     #  if we haven't visited this node yet
-    #     #      mark as visited
-    #     #      get its neighbors, add to queue
-
-    #     q = Queue()
-
-    #     q.enqueue(starting_vertex)
-    #     neighbors = []
-
-    #     visited = set()
-
-    #     while q.size() > 0:
-    #         current_node = q.dequeue()
-    #         if current_node not in visited:
-    #             print(current_node)
-    #             visited.add(current_node)
-    #             neighbors = self.get_neighbors(current_node)
-    #             for neighbor in neighbors:
-    #                 q.enqueue(neighbor)
     def get_neighbors(self, friend):
         return self.friendships[friend]
+    
+    def bfs(self, starting_vertex, destination_vertex):
+        q = Queue()
+        visited = set()
+
+        #add rhe path to the starting vertex
+
+        path = [starting_vertex]
+        q.enqueue(path)
+
+        while q.size() > 0:
+            #get current path out of queue
+            current_path = q.dequeue()
+            #get the current node out of the current path
+            current_node = current_path[-1]
+            if current_node == destination_vertex:
+                return current_path
+            if current_node not in visited:
+                visited.add(current_node)
+                neighbors = self.get_neighbors(current_node)
+                for neighbor in neighbors:
+                    #make a copy of the path for each neighbor before adding it 
+                    #this is so we don't alter the original path for different nodes
+                    path_copy = current_path[:] 
+                    path_copy.append(neighbor)
+
+                    q.enqueue(path_copy)
 
     def get_all_social_paths(self, user_id):
         """
@@ -120,8 +118,6 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-        friends_of_friend = {}
         # return visited
         # 1. Describe the problem using graphs terminology
         #     What are your nodes?
@@ -143,15 +139,27 @@ class SocialGraph:
         #get all of their friends
         #   this is the get neighbors part
         #put them together, prioritizing shortest connection to target
-        print('the original user:', user_id)
-        friends_of_friend[user_id] = []
+        '''
+    def island_counter(isles): 
+        visited = set()
+        number_islands = 0
+        for row in range(len(isles)):
+            for col in range(len(isles[row])):
+                node = (row, col)
+                #check if visited and if it is a 1
+                if node not in visited and isles[row][col] == 1:
+                    number_islands += 1
+                    dft_recursive(node, visited, isles)
+        return number_islands
+        '''
+        visited = {}  # Note that this is a dictionary, not a set
         for friend in self.friendships[user_id]:
-            friends_of_friend[friend] = []
-        for first_degree in friends_of_friend:
-            #this is where I am getting the neighbors
-            friends_of_friend[first_degree] += self.friendships[first_degree]
-            friends_of_friend[first_degree] += [first_degree]
-        return friends_of_friend
+            if friend not in visited:
+                visited[friend] = self.bfs(user_id, friend)
+            #print('first iter:', visited)
+            for second_degree in self.friendships[friend]:
+                visited[second_degree] = self.bfs(user_id, second_degree)
+        return visited
 
 
 
