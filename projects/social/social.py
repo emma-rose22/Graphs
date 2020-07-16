@@ -21,12 +21,13 @@ class SocialGraph:
         Creates a bi-directional friendship
         """
         if user_id == friend_id:
-            print("WARNING: You cannot be friends with yourself")
+            return False
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
-            print("WARNING: Friendship already exists")
+            return False
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
+            return True
 
     def add_user(self, name):
         """
@@ -79,6 +80,35 @@ class SocialGraph:
         for friendship in random_friendships:
             self.add_friendship(friendship[0], friendship[1])
 
+    def linear_time_populate_graph(self, num_users, avg_friendships):
+        # Reset graph
+        self.last_id = 0
+        self.users = {}
+        self.friendships = {}
+
+        # Add users
+        ## use num users
+        for user in range(num_users):
+            self.add_user(user)
+
+        #as long as we havent made all the friendships we need
+        # pick 2 random numbers between 1 and last id
+        # try to create that friendship
+        # if we can, increment friendships
+
+        target_num_friendships = (num_users * avg_friendships) // 2
+        friendships_created = 0
+
+        while friendships_created < target_num_friendships:
+            #pick two random nums between 1 and last id
+            friend_one = random.randint(1, num_users)
+            friend_two = random.randint(1, num_users)
+            #will return false if friendship exists or we try to be friends with ourselves
+            friendship_successful = self.add_friendship(friend_one, friend_two)
+            if friendship_successful:
+                friendships_created += 2
+
+
     def get_neighbors(self, friend):
         return self.friendships[friend]
     
@@ -108,6 +138,7 @@ class SocialGraph:
                     path_copy.append(neighbor)
 
                     q.enqueue(path_copy)
+
 
     def get_all_social_paths(self, user_id):
         """
@@ -161,6 +192,48 @@ class SocialGraph:
                 visited[second_degree] = self.bfs(user_id, second_degree)
         return visited
 
+        #lesson version:
+        # Plan, use BTF, use dictionary for visited
+
+        #imports a queue
+
+        #while q isdsn't empty
+        #  deque the current path
+        #  grab the last vertex from the path
+
+        #  if it hasn't been visited
+        #     add to dictionary 
+        #     then enqueue paths to each of our neighbors 
+
+
+    def get_all_social_paths2(self, user_id):
+        #used bft because we still do need to go through every item
+        #though we are using it a bit like a search here
+        visited = {}
+        q = Queue()
+        q.enqueue([user_id])
+
+        while q.size() > 0:
+            #get current path 
+            current_path = q.dequeue()
+
+            #get last vertex
+            current_user = current_path[-1]
+
+            #if it hasnt ben visited 
+            if current_user not in visited:
+                visited[current_user] = current_path
+
+                friends = self.friendships[current_user]
+
+                #enqueue paths to each neighbors
+                for friend in friends:
+                    path_to_friend = current_path + [friend]
+
+                    q.enqueue(path_to_friend)
+
+        return visited
+
 
 
 
@@ -168,5 +241,26 @@ if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print('the graph:', sg.friendships)
-    connections = sg.get_all_social_paths(1)
-    print('friends of friend:', connections)
+    #connections = sg.get_all_social_paths(1)
+    #print('friends of friend:', connections)
+    connections = sg.get_all_social_paths2(1)
+    print('extended network:', connections)
+
+
+    #percent of total users in extended social network
+
+    #how many people we know // how many people there are
+
+    # print(f'{(len(connections) - 1) / 10 *100}%')
+
+    # #what is the average degree of seperation between a user and the network?
+
+    # # average length of a path to each user
+    # #traverse a users extended connections, gather lengths, sum
+
+    # total_length = 0
+
+    # for friend in connections:
+    #     total_length += len(connections[friend])
+
+    # print(total_length / len(connections))

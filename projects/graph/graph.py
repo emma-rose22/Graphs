@@ -31,6 +31,9 @@ class Graph:
     def __init__(self):
         self.vertices = {}
 
+    def __str__(self):
+        return f'{self.vertices}'
+
     def add_vertex(self, vertex_id):
         """
         Add a vertex to the graph.
@@ -372,3 +375,6 @@ if __name__ == '__main__':
 
     print('DFS Recursive:')
     print(graph.dfs_recursive(1, 6))
+
+
+    print('the graph:', graph)
