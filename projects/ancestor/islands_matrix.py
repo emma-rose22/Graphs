@@ -11,10 +11,10 @@ islands = [[0, 1, 0, 1, 0],
 #island_counter(islands) # returns 4
 
 #nodes = the ones
-#edge= if directly connected by n, s, e, w
-#islands : connected componenets
+#edge = if directly connected by n, s, e, w
+#islands = connected componenets
 
-#build our graph or jsut define getNeighbors
+#build our graph or just define getNeighbors
 
 #we can iterate through and when we encounter a 1, 
 #do get neighbors to get all the 1s it is touching

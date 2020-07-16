@@ -49,8 +49,6 @@ class SocialGraph:
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
-        total_friendships = num_users * avg_friendships
 
         # Add users
         ## use num users
@@ -60,8 +58,11 @@ class SocialGraph:
         # Create friendships
         ## we could make a list with all possible friendships 
         friendships = []
+        #for all users in the range of users we just made
         for user in range(1, self.last_id + 1):
+            #for friend in range of current user and the number of users we asked for 
             for friend in range(user + 1, num_users + 1):
+                #create a tuple of each user and a random friend
                 friendship = (user, friend)
                 friendships.append(friendship)
         
@@ -72,9 +73,43 @@ class SocialGraph:
         #divided by two because bidirectional
         random_friendships = friendships[:total_friendships//2]
 
-        # add to self.friendships
+        # add randomized friendships paired down for the number of friends we asked for
+        # to the class friendships
         for friendship in random_friendships:
             self.add_friendship(friendship[0], friendship[1])
+    # def bft(self, starting_vertex):
+    #     """
+    #     Print each vertex in breadth-first order
+    #     beginning from starting_vertex.
+    #     """
+    #     # make a queue
+    #     # insert starting node into queue
+    #     # we don't want to visit the same node twice
+    #     #   can do this with a set
+
+    #     #while queueu isn't empyu
+    #     #  deque from front of line
+    #     #  if we haven't visited this node yet
+    #     #      mark as visited
+    #     #      get its neighbors, add to queue
+
+    #     q = Queue()
+
+    #     q.enqueue(starting_vertex)
+    #     neighbors = []
+
+    #     visited = set()
+
+    #     while q.size() > 0:
+    #         current_node = q.dequeue()
+    #         if current_node not in visited:
+    #             print(current_node)
+    #             visited.add(current_node)
+    #             neighbors = self.get_neighbors(current_node)
+    #             for neighbor in neighbors:
+    #                 q.enqueue(neighbor)
+    def get_neighbors(self, friend):
+        return self.friendships[friend]
 
     def get_all_social_paths(self, user_id):
         """
@@ -86,13 +121,44 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
-        return visited
+        friends_of_friend = {}
+        # return visited
+        # 1. Describe the problem using graphs terminology
+        #     What are your nodes?
+                #user id
+        #     when are nodes connected?
+                #when they are friends
+        #     What are your connected components?
+                #the users
+
+        # 2. Build your graph, or at least write get_neighbors() function
+        #     Figure out how to get the nodes with which the node has an edge (how to connect nodes)
+                # currently each friend is in a dictionary, w/ a dictionary of their friends
+
+        # 3. Choose your algorithm and apply it 
+            #we should do a breadth first traversal because we want the shortest path
+
+        #do a bft of everyone in the user's extended friend group
+        #go through all the users that contain target as friends
+        #get all of their friends
+        #   this is the get neighbors part
+        #put them together, prioritizing shortest connection to target
+        print('the original user:', user_id)
+        friends_of_friend[user_id] = []
+        for friend in self.friendships[user_id]:
+            friends_of_friend[friend] = []
+        for first_degree in friends_of_friend:
+            #this is where I am getting the neighbors
+            friends_of_friend[first_degree] += self.friendships[first_degree]
+            friends_of_friend[first_degree] += [first_degree]
+        return friends_of_friend
+
+
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
-    print(sg.friendships)
+    print('the graph:', sg.friendships)
     connections = sg.get_all_social_paths(1)
-    print(connections)
+    print('friends of friend:', connections)
