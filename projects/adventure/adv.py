@@ -1,6 +1,7 @@
 from room import Room
 from player import Player
 from world import World
+from util import Stack, Queue
 
 import random
 from ast import literal_eval
@@ -71,25 +72,52 @@ traversal_path = ['n', 'n']
 #        if it has cardinal directions that haven't been visited
 #             do a breadth first traversal from there
 
-print('get exits:', player.current_room.get_exits())
-
-def generate_graph(starter_room):
+def make_room_dict(starter_room):
     #make this get neighbors?
-    all_rooms = {}
+    the_room = {}
     room_directions = {}
     for direction in starter_room.get_exits():
         room_directions[direction] = '?'
-    all_rooms[starter_room.name] = room_directions
+    the_room[starter_room.name] = room_directions
+    return the_room
+
+print('what', player.current_room.name)
+
+def graph_all_rooms(starter_room):
+    #this is a DFT
+    #the master graph
+    all_rooms = {}
+    s = Stack()
+    #add in the first room 
+    s.push(starter_room)
+    visited = set()
+
+    while s.size() > 0:
+        current_node = s.pop()
+        print('current node:', current_node)
+        if current_node not in visited:
+            visited.add(current_node)
+            #add room's directions and room to all_rooms
+            all_rooms[current_node.name] = make_room_dict(current_node)
+            print('added room:', all_rooms[current_node.name])
+            #for each of the available directions in that room
+            for direction_list in all_rooms[current_node.name].values():
+                for direction in direction_list.keys():
+                    print('direction:', direction)
+                    #if we can travel there 
+                    player.travel(direction)
+                    #print('player room:', player.current_room)
+                    #add that room to the stack of rooms to visit
+                    s.push(player.travel(direction))
     return all_rooms
 
-print('first path:', generate_path(player.current_room))
-print('description:', player.current_room.description)
+#print('trying to move:', player.travel('n'))
+
+print('first graph:', graph_all_rooms(player.current_room))
 
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
-
-print('current', player.current_room.name)
 
 visited_rooms.add(player.current_room)
 
