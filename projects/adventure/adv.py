@@ -75,12 +75,16 @@ def dungeon_steps(starting_room):
     visited = set()
     path = []
 
+    dft = 0
+    bfs = 0 
+
     while len(visited) < len(room_graph):
         #print('visited:', visited)
         current_r = s.pop()
         current_r = player.current_room
 
         if current_r.name not in visited:
+            dft += 1
             visited.add(current_r.name)
             #find an exit and move through it 
             exits = player.current_room.get_exits()
@@ -95,10 +99,14 @@ def dungeon_steps(starting_room):
             #if we get into a dead end
             #we need to do a bfs for an unvisited room
 
+            #go all the way back to the beginning instead
+            #check exits before moving into it 
+            #dictionary to go back
+            #
+            bfs += 1
             q = Queue()
             visited_search = set()
-            current_search = current_r
-            q.enqueue(current_search)
+            q.enqueue(current_r)
 
             found = False
             while q.size() > 0 and found == False:
@@ -109,17 +117,22 @@ def dungeon_steps(starting_room):
                     direction = random.sample(exits, 1)
                     path += direction
                     player.travel(direction[0])
-                    s.push(player.current_room.name)
+                    s.push(player.current_room)
 
                 else:
                     found = True
-
+    #trying to bring these numbers down
+    print('dft', dft)
+    print('bfs', bfs)
     return path
-    
+
+#tried changing search type 
+#tried using  get_room_in_direction to check an exit before moving there
+#tried not using seperate visited for bfs    
 
 traversal_path = dungeon_steps(player.current_room)
 #print('dummy_path:', traversal_path)
-
+print('length',len(traversal_path))
 
 # TRAVERSAL TEST
 visited_rooms = set()
