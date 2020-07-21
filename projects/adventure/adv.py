@@ -70,69 +70,57 @@ traversal_path = []
 
 
 def dungeon_steps(starting_room):
-    s = Stack()
+    s = Stack() 
     s.push([starting_room])
     visited = set()
     path = []
-
-    dft = 0
-    bfs = 0 
+    #past_directions = Stack()
+    opposites = {'n': 's', 'e': 'w', 's': 'n', 'w': 'e'}
 
     while len(visited) < len(room_graph):
-        #print('visited:', visited)
-        current_r = s.pop()
-        current_r = player.current_room
+        directions = []
+        #add current room to visited
+        visited.add(player.current_room)
+        #find an exit and move through it 
+        exits = player.current_room.get_exits()
+        #what if I checked if the room was visited before 
+        #making it one of the random choices
+        for i in exits:
+            if player.current_room.get_room_in_direction(i) not in visited:
+                directions.append(i)
 
-        if current_r.name not in visited:
-            dft += 1
-            visited.add(current_r.name)
-            #find an exit and move through it 
-            exits = player.current_room.get_exits()
-            #choose an exit to go through
-            direction = random.sample(exits, 1)
+        #choose an exit to go through
+        #not choosing visited rooms means maybe directions are empty
+        if len(directions) > 0:
+            direction = random.sample(directions, 1)
             #add to path
-            path += direction
+            path.append(direction[0])
             #move into one of the rooms
             player.travel(direction[0])
-            s.push(player.current_room)
+            #trying add direction instead of name
+            s.push(direction[0])
+ 
         else:
-            #if we get into a dead end
-            #we need to do a bfs for an unvisited room
+            #instead of using bfs,
+            #what if I turn around and go the opposite way
+            #this only works if I store room directions instead of 
+            #the names
 
-            #go all the way back to the beginning instead
-            #check exits before moving into it 
-            #dictionary to go back
-            #
-            bfs += 1
-            q = Queue()
-            visited_search = set()
-            q.enqueue(current_r)
+            #using path doesnt work, creates endless loop
+            turn_around = s.pop()
+            player.travel(opposites[turn_around])
+            path.append(opposites[turn_around])
 
-            found = False
-            while q.size() > 0 and found == False:
-                current = q.dequeue()
-                if current.name not in visited_search and current.name in visited:
-                    visited_search.add(current.name)
-                    exits = current.get_exits()
-                    direction = random.sample(exits, 1)
-                    path += direction
-                    player.travel(direction[0])
-                    s.push(player.current_room)
 
-                else:
-                    found = True
-    #trying to bring these numbers down
-    print('dft', dft)
-    print('bfs', bfs)
     return path
 
 #tried changing search type 
 #tried using  get_room_in_direction to check an exit before moving there
 #tried not using seperate visited for bfs    
+#try turning around instead of bfs
 
 traversal_path = dungeon_steps(player.current_room)
 #print('dummy_path:', traversal_path)
-print('length',len(traversal_path))
 
 # TRAVERSAL TEST
 visited_rooms = set()
